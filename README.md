@@ -15,9 +15,9 @@ This .NET console application monitors a local folder for new files and uploads 
    cd MoveItFileMonitor
    cd MoveItFileMonitor
    ```
-   NOTE: You need to run the cd command twice as the initial folder in the repository contains the solution and the project folder and you need to then go into the project folder itself to run the application
+   NOTE: You need to run the cd command twice because the initial folder in the repository contains the solution and the project folder and you need to then go into the project folder itself to run the application
 
-2. **Run these 2 commands in the terminal while in the 'MoveItFileMonitor' folder to run the application**
+2. **Run these 2 commands in the terminal while in the 'MoveItFileMonitor' project folder**
    ```
    dotnet build
    dotnet run -- "<username>" "<password>" "<local_folder_path>"
