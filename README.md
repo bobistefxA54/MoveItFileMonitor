@@ -16,4 +16,12 @@ This .NET console application monitors a local folder for new files and uploads 
    cd MoveItFileMonitor
    ```
 
-2. 
+2. **Run the Application**
+   Now run these 2 commands in the terminal while in the 'MoveItFileMonitor' folder
+   ```
+   dotnet build
+   dotnet run -- "<username>" "<password>" "<local_folder_path>"
+   ```
+   Eg. dotnet run -- "bobistefx" "<foobar>" "<D:\UploadTheseFiles>"
+
+3. **Now you can close the application by clicking on any button as soon as you are done**
