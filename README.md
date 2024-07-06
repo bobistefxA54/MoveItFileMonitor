@@ -20,6 +20,6 @@ This .NET console application monitors a local folder for new files and uploads 
    dotnet build
    dotnet run -- "<username>" "<password>" "<local_folder_path>"
    ```
-   Eg. dotnet run -- "bobistefx" "foobar" "D:\UploadTheseFiles"
+   Example: dotnet run -- "bobistefx" "foobar" "D:\UploadTheseFiles"
 
 3. **You can close the application by clicking on any button as soon as you are done**
