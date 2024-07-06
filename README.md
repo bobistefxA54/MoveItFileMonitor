@@ -9,7 +9,7 @@ This .NET console application monitors a local folder for new files and uploads 
 
 ## Setup Instructions
 
-1. **Run the following commands in your terminal to clone the repository**
+**Run the following commands in your terminal to clone the repository**
    ```
    git clone https://github.com/bobistefxA54/MoveItFileMonitor
    cd MoveItFileMonitor
@@ -17,11 +17,11 @@ This .NET console application monitors a local folder for new files and uploads 
    ```
    NOTE: You need to run the cd command twice because the initial folder in the repository contains the solution and the project folder and you need to then go into the project folder itself to run the application
 
-2. **Run these 2 commands in the terminal while in the 'MoveItFileMonitor' project folder**
+**Run these 2 commands in the terminal while in the 'MoveItFileMonitor' project folder**
    ```
    dotnet build
    dotnet run -- "<username>" "<password>" "<local_folder_path>"
    ```
    Example: dotnet run -- "bobistefx" "foobar" "D:\UploadTheseFiles"
 
-3. **You can close the application by clicking on any button as soon as you are done**
+**You can close the application by clicking on any button as soon as you are done**
