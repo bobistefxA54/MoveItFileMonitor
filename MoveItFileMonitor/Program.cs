@@ -10,6 +10,8 @@ namespace MoveItFileMonitor
         {
             using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger logger = factory.CreateLogger("MainProgram");
+
+            using HttpClient client = new HttpClient();
             
             try
             {
@@ -17,8 +19,8 @@ namespace MoveItFileMonitor
                 string password = args[1];
                 string path = args[2];
 
-                var authService = new AuthService();
-                var fileUploader = new FileUploader();
+                var authService = new AuthService(client);
+                var fileUploader = new FileUploader(client);
 
                 string token = await authService.GetAccessTokenAsync(username, password); // returns token successfully
                 string homeFolderId = await authService.GetHomeFolderIdAsync(token); // returns homeFolderID successfully

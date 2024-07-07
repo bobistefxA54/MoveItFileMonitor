@@ -14,9 +14,9 @@ namespace MoveItFileMonitor
         private const string _homeFolderId = "homeFolderID"; // ID in the property is with capital D not 'Id'
         private readonly HttpClient _httpClient;
 
-        public AuthService()
+        public AuthService(HttpClient httpClient)
         {
-            _httpClient = new HttpClient();
+            _httpClient = httpClient;
         }
 
         public async Task<string> GetAccessTokenAsync(string username, string password)
@@ -38,12 +38,12 @@ namespace MoveItFileMonitor
 
             var responseString = await response.Content.ReadAsStringAsync();
             var jsonResponse = JObject.Parse(responseString);
-            if (jsonResponse[_accessToken] != null)
+            if (jsonResponse[_accessToken] is null)
             {
-                return jsonResponse[_accessToken].ToString();
+                throw new NullReferenceException("Access token is null"); // this check might not be necessary if the response has a success status code
             }
+            return jsonResponse[_accessToken].ToString();
 
-            throw new NullReferenceException("Access token is null");
         }
 
         public async Task<string> GetHomeFolderIdAsync(string accessToken)
@@ -52,6 +52,10 @@ namespace MoveItFileMonitor
             var user = await _httpClient.GetStringAsync("https://testserver.moveitcloud.com/api/v1/users/self");
 
             var jsonResponse = JObject.Parse(user);
+            if (jsonResponse[_homeFolderId] is null)
+            {
+                throw new NullReferenceException($"Home folder ID is null"); // unclear if this is necessary since if there is a user, there has to be a home folder
+            }
             return jsonResponse[_homeFolderId].ToString();
         }
 

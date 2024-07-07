@@ -9,9 +9,9 @@ namespace MoveItFileMonitor
     public class FileUploader
     {
         private readonly HttpClient _httpClient;
-        public FileUploader()
+        public FileUploader(HttpClient httpClient)
         {
-            _httpClient = new HttpClient();
+            _httpClient = httpClient;
         }
 
         public async Task UploadFileAsync(string filePath, string token, string homeFolderID)
