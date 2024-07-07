@@ -35,7 +35,6 @@ namespace MoveItFileMonitor.test
             var token = authService.GetAccessTokenAsync("username", "password");
             
             Assert.AreEqual("valid_token", token.Result);
-            //Assert.IsNotNull(token);
         }
 
         [TestMethod]

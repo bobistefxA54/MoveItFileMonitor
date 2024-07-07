@@ -11,7 +11,7 @@ namespace MoveItFileMonitor
     {
         private const string _accessToken = "access_token";
         private const string _grantType = "password";
-        private const string _homeFolderId = "homeFolderID"; // ID in the property is with capital D not 'Id'
+        private const string _homeFolderId = "homeFolderID";
         private readonly HttpClient _httpClient;
 
         public AuthService(HttpClient httpClient)
@@ -30,7 +30,6 @@ namespace MoveItFileMonitor
 
             var urlEncodedCredentials = new FormUrlEncodedContent(credentials);
             var response = await _httpClient.PostAsync("https://testserver.moveitcloud.com/api/v1/token", urlEncodedCredentials);
-            //response.EnsureSuccessStatusCode();
             if (!response.IsSuccessStatusCode)
             {
                 throw new HttpRequestException("Login failed. Check credentials");

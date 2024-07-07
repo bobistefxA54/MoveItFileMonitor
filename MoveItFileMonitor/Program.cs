@@ -22,8 +22,8 @@ namespace MoveItFileMonitor
                 var authService = new AuthService(client);
                 var fileUploader = new FileUploader(client);
 
-                string token = await authService.GetAccessTokenAsync(username, password); // returns token successfully
-                string homeFolderId = await authService.GetHomeFolderIdAsync(token); // returns homeFolderID successfully
+                string token = await authService.GetAccessTokenAsync(username, password);
+                string homeFolderId = await authService.GetHomeFolderIdAsync(token);
 
                 var fileMonitor = new FileMonitor(path, token, homeFolderId, fileUploader);
                 fileMonitor.Start();
