@@ -1,6 +1,5 @@
 using Moq;
 using Moq.Protected;
-using MoveItFileMonitor;
 using System.Net;
 
 namespace MoveItFileMonitor.test
@@ -33,7 +32,7 @@ namespace MoveItFileMonitor.test
                 });
 
             var token = authService.GetAccessTokenAsync("username", "password");
-            
+
             Assert.AreEqual("valid_token", token.Result);
         }
 
@@ -49,6 +48,34 @@ namespace MoveItFileMonitor.test
                 });
 
             Assert.ThrowsExceptionAsync<HttpRequestException>(() => authService.GetAccessTokenAsync("invalid_username", "invalid_password"));
+        }
+
+        [TestMethod]
+        public void GetAccessTokenAsync_WithNullJsonResponse_ThrowsNullReferenceException()
+        {
+            mockHttpMessageHandler.Protected().Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post),
+                ItExpr.IsAny<CancellationToken>()).ReturnsAsync(new HttpResponseMessage
+                {
+                    Content = null
+                });
+
+            Assert.ThrowsExceptionAsync<NullReferenceException>(() => authService.GetAccessTokenAsync("invalid_username", "invalid_password"));
+        }
+
+        [TestMethod]
+        public void GetHomeFolderIdAsync_WithNullJsonResponse_ThrowsNullReferenceException()
+        {
+            mockHttpMessageHandler.Protected().Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post),
+                ItExpr.IsAny<CancellationToken>()).ReturnsAsync(new HttpResponseMessage
+                {
+                    Content = null
+                });
+
+            Assert.ThrowsExceptionAsync<NullReferenceException>(() => authService.GetHomeFolderIdAsync("invalid_access_token"));
         }
     }
 }
