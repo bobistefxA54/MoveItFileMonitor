@@ -41,8 +41,8 @@ namespace MoveItFileMonitor
         private async void OnChanged(object sender, FileSystemEventArgs e)
         {
             await _uploader.UploadFileAsync(e.FullPath, _token, _homeFolderID);
-            string logMessage = $"{e.Name} uploaded to folder with ID {_homeFolderID}";
-            _logger.LogInformation(logMessage);
+            string logMessage = "{FileName} uploaded to folder with ID {FolderID}";
+            _logger.LogInformation(logMessage, e.Name, _homeFolderID);
         }
 
     }

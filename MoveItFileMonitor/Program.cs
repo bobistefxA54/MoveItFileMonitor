@@ -36,6 +36,10 @@ namespace MoveItFileMonitor
             {
                 logger.LogInformation(ex.Message);
             }
+            catch (HttpRequestException ex)
+            {
+                logger.LogInformation(ex.Message);
+            }
             catch (Exception ex)
             {
                 logger.LogInformation(ex.Message);

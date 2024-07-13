@@ -25,7 +25,8 @@ namespace MoveItFileMonitor
 
             string uri = $"https://testserver.moveitcloud.com/api/v1/folders/{homeFolderID}/files";
 
-            await _httpClient.PostAsync(uri, formData);
+            var response = await _httpClient.PostAsync(uri, formData);
+            response.EnsureSuccessStatusCode();
         }
     }
 }
