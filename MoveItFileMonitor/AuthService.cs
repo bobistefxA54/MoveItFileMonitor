@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,13 @@ namespace MoveItFileMonitor
         private const string _accessToken = "access_token";
         private const string _grantType = "password";
         private const string _homeFolderId = "homeFolderID";
+        private readonly string? _baseUrl;
         private readonly HttpClient _httpClient;
 
-        public AuthService(HttpClient httpClient)
+        public AuthService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _baseUrl = configuration["MoveItCloud:BaseUrl"];
         }
 
         public async Task<string> GetAccessTokenAsync(string username, string password)
@@ -29,7 +32,7 @@ namespace MoveItFileMonitor
                 };
 
             var urlEncodedCredentials = new FormUrlEncodedContent(credentials);
-            var response = await _httpClient.PostAsync("https://testserver.moveitcloud.com/api/v1/token", urlEncodedCredentials);
+            var response = await _httpClient.PostAsync($"{_baseUrl}/token", urlEncodedCredentials);
             if (!response.IsSuccessStatusCode)
             {
                 throw new HttpRequestException("Login failed. Check credentials");
@@ -37,25 +40,18 @@ namespace MoveItFileMonitor
 
             var responseString = await response.Content.ReadAsStringAsync();
             var jsonResponse = JObject.Parse(responseString);
-            if (jsonResponse[_accessToken] is null)
-            {
-                throw new NullReferenceException("Access token is null"); // this check might not be necessary if the response has a success status code
-            }
-            return jsonResponse[_accessToken].ToString();
-
+            var accessToken = (jsonResponse[_accessToken]?.ToString()) ?? throw new NullReferenceException("Access token is null");
+            return accessToken;
         }
 
         public async Task<string> GetHomeFolderIdAsync(string accessToken)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-            var user = await _httpClient.GetStringAsync("https://testserver.moveitcloud.com/api/v1/users/self");
+            var user = await _httpClient.GetStringAsync($"{_baseUrl}/users/self");
 
             var jsonResponse = JObject.Parse(user);
-            if (jsonResponse[_homeFolderId] is null)
-            {
-                throw new NullReferenceException($"Home folder ID is null"); // unclear if this is necessary since if there is a user, there has to be a home folder
-            }
-            return jsonResponse[_homeFolderId].ToString();
+            var homeFolderId = jsonResponse[_homeFolderId]?.ToString() ?? throw new NullReferenceException("Home folder ID is null");
+            return homeFolderId;
         }
 
     }

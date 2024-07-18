@@ -14,20 +14,20 @@ namespace MoveItFileMonitor
         private readonly FileUploader _uploader;
         private readonly ILogger _logger;
 
-        public FileMonitor(string path, string token, string homeFolderID, FileUploader fileUploader)
+        public FileMonitor(string path, string token, string homeFolderID, FileUploader fileUploader, ILogger logger)
         {
             _path = path;
             _token = token;
             _homeFolderID = homeFolderID;
             _uploader = fileUploader;
             using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-            _logger = factory.CreateLogger("FileMonitor");
+            _logger = logger;
         }
 
         public void Start()
         {
 
-            FileSystemWatcher watcher = new FileSystemWatcher
+            FileSystemWatcher watcher = new()
             {
                 Path = _path,
                 NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.FileName,
@@ -40,9 +40,12 @@ namespace MoveItFileMonitor
 
         private async void OnChanged(object sender, FileSystemEventArgs e)
         {
+            if (e.ChangeType != WatcherChangeTypes.Changed)
+            {
+                return;
+            }
             await _uploader.UploadFileAsync(e.FullPath, _token, _homeFolderID);
-            string logMessage = "{FileName} uploaded to folder with ID {FolderID}";
-            _logger.LogInformation(logMessage, e.Name, _homeFolderID);
+            _logger.LogInformation("{FileName} uploaded to folder with ID {FolderID}", e.Name, _homeFolderID);
         }
 
     }

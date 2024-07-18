@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 
@@ -8,10 +10,29 @@ namespace MoveItFileMonitor
     {
         static async Task Main(string[] args)
         {
-            using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger logger = factory.CreateLogger("MainProgram");
+            if (args.Length != 3)
+            {
+                Console.WriteLine("Usage: MoveItFileMonitor <username> <password> <path>");
+                return;
+            }
 
-            using HttpClient client = new HttpClient();
+            IConfiguration configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton<IConfiguration>(configuration)
+                .AddSingleton<HttpClient>()
+                .AddSingleton<AuthService>()
+                .AddSingleton<FileUploader>()
+                .AddSingleton<FileMonitor>()
+                .AddLogging(builder => builder.AddConsole())
+                .BuildServiceProvider();
+
+            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+
+            using HttpClient client = new();
             
             try
             {
@@ -19,13 +40,13 @@ namespace MoveItFileMonitor
                 string password = args[1];
                 string path = args[2];
 
-                var authService = new AuthService(client);
-                var fileUploader = new FileUploader(client);
+                var authService = serviceProvider.GetRequiredService<AuthService>();
+                var fileUploader = serviceProvider.GetRequiredService<FileUploader>();
 
                 string token = await authService.GetAccessTokenAsync(username, password);
                 string homeFolderId = await authService.GetHomeFolderIdAsync(token);
 
-                var fileMonitor = new FileMonitor(path, token, homeFolderId, fileUploader);
+                var fileMonitor = new FileMonitor(path, token, homeFolderId, fileUploader, logger);
                 fileMonitor.Start();
 
 
@@ -34,15 +55,15 @@ namespace MoveItFileMonitor
             }
             catch (NullReferenceException ex)
             {
-                logger.LogInformation(ex.Message);
+                logger.LogError(ex, "A null reference error occurred: {Message}", ex.Message);
             }
             catch (HttpRequestException ex)
             {
-                logger.LogInformation(ex.Message);
+                logger.LogError(ex, "An HTTP request error occurred: {Message}", ex.Message);
             }
             catch (Exception ex)
             {
-                logger.LogInformation(ex.Message);
+                logger.LogError(ex, "An unexpected error occurred: {Message}", ex.Message);
             }
         }
 

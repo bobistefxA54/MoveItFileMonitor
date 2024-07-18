@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,11 @@ namespace MoveItFileMonitor
     public class FileUploader
     {
         private readonly HttpClient _httpClient;
-        public FileUploader(HttpClient httpClient)
+        private readonly string? _baseUrl;
+        public FileUploader(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _baseUrl = configuration["MoveItCloud:BaseUrl"];
         }
 
         public async Task UploadFileAsync(string filePath, string token, string homeFolderID)
@@ -23,7 +26,7 @@ namespace MoveItFileMonitor
             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
             formData.Add(fileContent, "file", Path.GetFileName(filePath));
 
-            string uri = $"https://testserver.moveitcloud.com/api/v1/folders/{homeFolderID}/files";
+            string uri = $"{_baseUrl}/folders/{homeFolderID}/files";
 
             var response = await _httpClient.PostAsync(uri, formData);
             response.EnsureSuccessStatusCode();
